@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    
+    <div id="app">
+
+        <form>
+            <input type="text" v-model=nom placeholder="nom">
+            <input type="text" v-model="prenom" placeholder="prenom">
+            <input type="date" v-model="age" placeholder="age">
+            <input type="email" v-model="email" placeholder="email">
+            <select name="gender" v-model='genre'>
+                <option disabled="disabled" selected="selected" placeholder="genre">Gender</option>
+                <option>Masculin</option>
+                <option>Feminin</option>
+            </select>
+            <input type="phone" v-model="phone" placeholder="phone">
+
+            <button type="button" v-on:click="send()"> envoyer </button>
+            <p>
+                ${message}
+            </p>
+            
+        </form>
+
+    </div>
+
+    <script>
+        var app = new Vue({
+        el: '#app',
+        data: {
+            status: '',
+            message: '',
+            nom: '',
+            prenom: '',
+            age: '',
+            email: '',
+            genre: '',
+            phone: '',
+        },
+
+
+        delimiters : ['${','}'],
+
+        mounted(){
+        },
+
+        methods:{
+            msg : function (){
+                this.message = 'Vous avez ete bien enregistre'
+            },
+
+
+            send : function(){
+                axios.defaults.xsrfCookieName = "csrftoken"
+                axios.defaults.xsrfHeaderName = "X-CSRFToken"
+                axios.post("http://localhost:8000/podata", {
+                    nom : "" + this.nom,
+                    prenom : "" + this.prenom,
+                    age : "" + this.age,
+                    email : "" + this.email,
+                    genre : "" + this.genre,
+                    phone : "" + this.phone,
+                })
+                .then(response => {
+                    //this.message = response.data.message
+                    //this.status = response.data.status
+                    if (response.data.status) {
+                        console.log('bon status True' + response.data.status)
+                        console.log(response.data.message)
+                        this.nom = '',
+                        this.prenom = '',
+                        this.age = '',
+                        this.phone = '',
+                        this.genre = '',
+                        this.email = ''
+                    }else{
+                        console.log('Par Bon False ' + response.data.status)
+                        console.log()
+                        console.log(response.data.message)
+                        Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: response.data.message ,
+                        })
+                    }
+                   
+                })
+                .catch(e => {
+
+                })
+            }
+        },
+
+        })
+    </script>
+      
+</body>
+</html>

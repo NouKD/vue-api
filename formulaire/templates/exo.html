@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    
+    <div id="app">
+        ${ message }
+
+        <form>
+            <input type="text" v-model=nom placeholder="nom">
+            <input type="text" v-model="prenom" placeholder="prenom">
+            <button type="button" v-on:click="affiche"> affiche </button>
+            <button type="button" v-on:click="send"> envoyer </button>
+
+            <hr>
+            nom: ${nom}
+            prenom: ${prenom}
+        </form>
+
+    </div>
+
+
+    <script>
+        var app = new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue!',
+            nom: '',
+            prenom: '',
+        },
+
+
+        delimiters : ['${','}'],
+
+        mounted(){
+            this.msg()
+        },
+
+        methods:{
+            msg : function (){
+                this.message = 'Bonjour'
+            },
+
+            affiche : function(){
+                console.log(this.nom, this.prenom)
+            },
+
+            send : function(){
+                axios.defaults.xsrfCookieName = "csrftoken"
+                axios.defaults.xsrfHeaderName = "X-CSRFToken"
+                axios.post("http://localhost:8000/pdata", {
+                    nom : "" + this.nom,
+                    prenom : "" + this.prenom
+                })
+                .then(response => {
+                    console.log(response.data)
+
+                })
+                .catch(e => {
+
+                })
+            }
+        },
+
+        })
+
+        
+    </script>
+</body>
+</html>
