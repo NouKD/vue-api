@@ -51,13 +51,6 @@ def podata(request):
     status = False
     if request.method == 'POST':
         json_data = json.loads(request.body)
-        # print(json_data)
-        # print(json_data['nom'])
-        # print(json_data['prenom'])
-        # print(json_data['age'])
-        # print(json_data['email'])
-        # print(json_data['genre'])
-        # print(json_data['phone'])
 
         nom = json_data['nom']
         prenom = json_data['prenom']

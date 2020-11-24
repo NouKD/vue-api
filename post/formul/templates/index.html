@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+    
+    <div id="app">
+
+        <form>
+            <p v-if="errors.length">
+                <b style="color:rgb(66, 137, 204)">veillez bien saisir vos identifiant</b>
+                <ul>
+                  <li v-for="error in errors">${ error }</li>
+                </ul>
+            </p>
+            <label for="name">Nom<label></label>
+            <input id="nom" type="text" v-model=nom><br>
+            <input type="text" v-model="prenom" placeholder="prenom"><br>
+            <label for="age">Age<label></label>
+            <input type="date" v-model="age" placeholder="age"><br>
+            <label for="email">Email<label></label>
+            <input id="email" type="email" v-model="email" placeholder="email">
+            <select name="gender" v-model='genre'>
+                <option disabled="disabled" selected="selected" placeholder="genre">Gender</option>
+                <option>Masculin</option>
+                <option>Feminin</option>
+            </select><br>
+            <input type="phone" v-model="phone" placeholder="phone">
+
+            <button type="button" v-on:click="send()"> envoyer </button>
+            <p>
+                ${message}
+            </p>
+            
+        </form>
+
+    </div>
+
+    <script>
+        var app = new Vue({
+        el: '#app',
+        data: {
+            errors: [],
+            status: '',
+            message: '',
+            nom: '',
+            prenom: '',
+            age: '',
+            email: '',
+            genre: '',
+            phone: '',
+            base_url : window.location.protocol + "//" + window.location.host + "/",
+            post_url : "{% url 'postdata' %}"
+        },
+
+
+        delimiters : ['${','}'],
+
+        mounted(){
+            console.log(this.base_url)
+        },
+
+        methods:{
+            checkForm: function () {
+                if (this.nom && this.age && this.email) {
+                  return true;
+                }
+          
+                this.errors = [];
+          
+                if (!this.nom) {
+                  this.errors.push('Nom required.');
+                }
+                if (!this.age) {
+                  this.errors.push('Age required.');
+                }
+                if (!this.email) {
+                    this.errors.push('Email required.');
+                  } else if (!this.validEmail(this.email)) {
+                    this.errors.push('Valid email required.');
+                  }
+            
+                  if (!this.errors.length) {
+                    return true;
+                  }
+          
+               
+              },
+            validEmail: function (email) {
+            var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(email);
+            },
+             
+            msg : function (){
+                this.message = 'Vous avez ete bien enregistre'
+            },
+
+
+            send : function(){
+
+                let formaData = new FormData();
+                formaData.append('nom', this.nom)
+                formaData.append('prenom', this.prenom)
+                formaData.append('age', this.age)
+                formaData.append('email', this.email)
+                formaData.append('genre', this.genre)
+                formaData.append('phone', this.phone)
+
+                if (this.nom=""){//this.nom="" || this.prenom="" || this.age="" || this.email="" || this.genre="" || this.phone=""
+                }else{
+                    axios.defaults.xsrfCookieName = "csrftoken"
+                axios.defaults.xsrfHeaderName = "X-CSRFToken"
+                axios.post(this.post_url,formaData).then(response => {
+                    if (response.data.status) {
+                        console.log('votre enregistrement a bien ete pris en comptes' + response.data.status)
+                        console.log(response.data.message)
+                        this.nom = '',
+                        this.prenom = '',
+                        this.age = '',
+                        this.phone = '',
+                        this.genre = '',
+                        this.email = ''
+                        swal({
+                            title: "Good job!",
+                            text: response.data.message,
+                            icon: "success",
+                          });
+                    }else{
+                        console.log('veillez bien saisir vos identifiant ' + response.data.status)
+                        console.log()
+                        console.log(response.data.message)
+                        Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: response.data.message ,
+                        })
+                    }
+                   
+                })
+                .catch(e => {
+
+                }) 
+                }
+
+                
+            }
+        },
+
+        })
+    </script>
+      
+</body>
+</html>
