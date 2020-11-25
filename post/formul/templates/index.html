@@ -36,7 +36,7 @@
             </select><br>
             <input type="phone" v-model="phone" placeholder="phone">
 
-            <button type="button" v-on:click="send()"> envoyer </button>
+            <button type="button" @click.prevent="send"> envoyer </button>
             <p>
                 ${message}
             </p>
