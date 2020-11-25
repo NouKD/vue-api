@@ -115,11 +115,12 @@
                 formaData.append('genre', this.genre)
                 formaData.append('phone', this.phone)
 
-                if (this.nom=""){//this.nom="" || this.prenom="" || this.age="" || this.email="" || this.genre="" || this.phone=""
+                if (!this.nom || !this.prenom || !this.age || !this.email || !this.genre || !this.phone){
+                    console.log("vide =>>>")
                 }else{
                     axios.defaults.xsrfCookieName = "csrftoken"
-                axios.defaults.xsrfHeaderName = "X-CSRFToken"
-                axios.post(this.post_url,formaData).then(response => {
+                    axios.defaults.xsrfHeaderName = "X-CSRFToken"
+                    axios.post(this.post_url,formaData).then(response => {
                     if (response.data.status) {
                         console.log('votre enregistrement a bien ete pris en comptes' + response.data.status)
                         console.log(response.data.message)
@@ -133,15 +134,15 @@
                             title: "Good job!",
                             text: response.data.message,
                             icon: "success",
-                          });
+                        });
                     }else{
                         console.log('veillez bien saisir vos identifiant ' + response.data.status)
                         console.log()
                         console.log(response.data.message)
                         Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: response.data.message ,
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: response.data.message
                         })
                     }
                    
