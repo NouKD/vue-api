@@ -44,6 +44,7 @@
         </form>
 
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/imask/5.2.1/imask.es.min.js"></script>
 
     <script>
         var app = new Vue({
@@ -117,6 +118,11 @@
 
                 if (!this.nom || !this.prenom || !this.age || !this.email || !this.genre || !this.phone){
                     console.log("vide =>>>")
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'veillez bien saisir vos identifiant '
+                    })
                 }else{
                     axios.defaults.xsrfCookieName = "csrftoken"
                     axios.defaults.xsrfHeaderName = "X-CSRFToken"
@@ -157,6 +163,13 @@
         },
 
         })
+    </script>
+    <script>
+        var element = document.getElementById('phone');
+        var maskOptions = {
+        mask: '+{7}(000)000-00-00'
+        };
+        var mask = IMask(element, maskOptions);
     </script>
       
 </body>
