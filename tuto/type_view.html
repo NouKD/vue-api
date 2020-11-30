@@ -1,0 +1,78 @@
+<script src='https://cdn.jsdelivr.net/npm/vue/dist/vue.js'></script>
+    <script src='https://unpkg.com/axios/dist/axios.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script>
+        new Vue({
+            el: '#new_password_post',
+            data: {
+                password1: "",
+                password2: "",
+                is_submited: false,
+            },
+            delimiters: ["${", "}"],
+            methods: {
+                postNewPassword: function() {
+                    if (!this.password1 || !this.password2) {
+                        Swal.fire({
+                            icon: 'warning',
+                            toast: true,
+                            html: `<p style="color:rgb(240,32,101);font-weight:600;font-family:sans-serif">&nbsp; Les champs sont obligatoires</p>`,
+                            showConfirmButton: false,
+                        });
+                    }
+                    else if (this.password1 != this.password2) {
+                        Swal.fire({
+                            icon: 'warning',
+                            toast: true,
+                            html: `<p style="color:rgb(240,32,101);font-weight:600;font-family:sans-serif">&nbsp; Les mots de passe ne correspondent pas</p>`,
+                            showConfirmButton: false,
+                        });
+                    }
+                    else {
+                        this.is_submited = true
+                        let formData = new FormData();
+                        formData.append('password1', this.password1);
+                        formData.append('password2', this.password2);
+                        formData.append('token', "{{ token }}");
+                        axios.defaults.xsrfCookieName = 'csrftoken';
+                        axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+                        axios.post("{% url 'reset_password_confirm_view' %}", formData, {})
+                        .then((response) => {
+                            if (response.data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    toast: true,
+                                    html: `<p style="color:#777fff;margin-left:10px;text-align:center;font-weight:500;font-family:sans-serif; line-height:25px">${response.data.message}</p>`,
+                                    showConfirmButton: false,
+                                    footer: "<a href>Pensez à verifier vos spam</a>",
+                                }).then((e) => {
+                                    window.location.replace("{% url 'home'  %}")
+                                })
+                                this.is_submited = false
+                            } else {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Oops...',
+                                    toast: true,
+                                    html: `<p style="color:#ffc107;font-weight:600;font-family:sans-serif; line-height:25px">&nbsp; ${response.data.message}</p>`,
+                                    showConfirmButton: false,
+                                });
+                                this.is_submited = false
+                            }
+                        })
+                        .catch((err) => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Une erreur est survenu veuillez reessayer',
+                                footer: "<a href>Les developpeurs s'excusent pour les desagrements?</a>",
+                                timer: 3000
+                            });
+                            console.log(err);
+                            this.is_submited = false
+                        })
+                    }
+                }
+            },
+        })
+    </script>

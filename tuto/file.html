@@ -1,0 +1,17 @@
+handleImageUploaded() {
+    this.file = this.$refs.files.files[0];
+},
+
+
+headers: {
+ 'Content-Type': 'multipart/form-data',
+}
+
+var iframe = $('#description_ifr');
+var contenu = $('#tinymce[data-id="description"]', iframe.contents()).html();
+
+
+
+<!--v-on:change="handleImageUploaded" ref="files" accept=".pdf"-->
+
+

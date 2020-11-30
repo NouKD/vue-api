@@ -66,3 +66,15 @@ def postform(request):
         'name': name,
     }
     return JsonResponse(datas, safe=False)
+
+
+#conseption
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+
+        datas = {
+            'message': 'POST is required',
+            'success': False,
+        }
+        return JsonResponse(datas, safe=False)
